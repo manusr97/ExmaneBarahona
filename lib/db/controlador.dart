@@ -23,7 +23,7 @@ class DatabaseHelper {
     // to store database
 
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = '${directory.path}/dogs.db';
+    String path = '${directory.path}/btcs.db';
 
     // open/ create database at a given path
     var studentsDatabase = await openDatabase(
@@ -36,34 +36,45 @@ class DatabaseHelper {
   }
 
   void _createDb(Database db, int newVersion) async {
-    await db.execute('''Create TABLE tbl_dog (
+    await db.execute('''Create TABLE btcs (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  name TEXT,
-                  age INTEGER )
+                  tipo TEXT,
+                  qtyBuy INTEGER,
+                  qtySell INTEGER,
+                  comision INTEGER,
+                  fecha TEXT
+                   )
     
     ''');
   }
-
   // insert
-  Future<int> insertDog(Dog dog) async {
+  void setBTC(tipo,qtyBuy,qtySell,comision,fecha){
+    Bitcoin().setBTC(tipo,qtyBuy,qtySell,comision,fecha);
+    insertOrder(Bitcoin());
+  }
+  void updBTC(id,tipo,qtyBuy,qtySell,comision,fecha){
+    Bitcoin().updBTC(id, tipo,qtyBuy,qtySell,comision,fecha);
+    updateBTC(Bitcoin());
+  }
+  Future<int> insertOrder(Bitcoin dog) async {
     // add dog to table
 
     Database db = await instance.database;
-    int result = await db.insert('tbl_dog', dog.toMap());
+    int result = await db.insert('btcs', dog.toMap());
     return result;
   }
 
   // read operation
-  Future<List<Dog>> getAllDogs() async {
-    List<Dog> dogs = [];
+  Future<List<Bitcoin>> getAllOrders() async {
+    List<Bitcoin> dogs = [];
 
     Database db = await instance.database;
 
     // read data from table
-    List<Map<String, dynamic>> listMap = await db.query('tbl_dog');
+    List<Map<String, dynamic>> listMap = await db.query('btcs');
 
     for (var dogMap in listMap) {
-      Dog dog = Dog.fromMap(dogMap);
+      Bitcoin dog = Bitcoin.fromMap(dogMap);
       dogs.add(dog);
     }
 
@@ -74,14 +85,14 @@ class DatabaseHelper {
   // delete
   Future<int> deleteDog(int id) async {
     Database db = await instance.database;
-    int result = await db.delete('tbl_dog', where: 'id=?', whereArgs: [id]);
+    int result = await db.delete('btcs', where: 'id=?', whereArgs: [id]);
     return result;
   }
 
   // update
-  Future<int> updateDog(Dog dog) async {
+  Future<int> updateBTC(Bitcoin btc) async {
     Database db = await instance.database;
-    int result = await db.update('tbl_dog', dog.toMap(), where: 'id=?', whereArgs: [dog.id]);
+    int result = await db.update('btcs', btc.toMap(), where: 'id=?', whereArgs: [btc.id]);
     return result;
   }
 

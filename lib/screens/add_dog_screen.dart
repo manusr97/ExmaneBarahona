@@ -1,23 +1,28 @@
 import 'package:dogs_db_pseb_bridge/db/database_helper.dart';
 import 'package:dogs_db_pseb_bridge/models/dog.dart';
 import 'package:dogs_db_pseb_bridge/screens/dogs_list_screen.dart';
+import 'package:dogs_db_pseb_bridge/screens/graph.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-class AddDogScreen extends StatefulWidget {
-  const AddDogScreen({Key? key}) : super(key: key);
+import 'package:intl/intl.dart';
+class AddBTC extends StatefulWidget {
+  const AddBTC({Key? key}) : super(key: key);
 
   @override
-  State<AddDogScreen> createState() => _AddDogScreenState();
+  State<AddBTC> createState() => _AddBTCState();
 }
 
-class _AddDogScreenState extends State<AddDogScreen> {
+class _AddBTCState extends State<AddBTC> {
 
-  late String name;
-  late int age;
+  late String fecha;
+  late String tipo;
+  late int qtyBuy;
+  late int qtySell;
+  late int comision;
+
 
   var formKey = GlobalKey<FormState>();
-
+  TextEditingController dateController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,16 +36,17 @@ class _AddDogScreenState extends State<AddDogScreen> {
             key: formKey,
             child: Column(
               children: [
+                const SizedBox(height: 10,),
                 TextFormField(
                   decoration: const InputDecoration(
-                    hintText: 'Dog Name'
+                      hintText: 'Tipo compra/venta'
                   ),
                   validator: (String? value){
                     if( value == null || value.isEmpty){
-                      return 'Please provide Dog Name';
+                      return 'Selecciona el tipo compra o venta';
                     }
 
-                    name = value;
+                    tipo = value;
                     return null;
                   },
                 ),
@@ -48,40 +54,103 @@ class _AddDogScreenState extends State<AddDogScreen> {
                 TextFormField(
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                      hintText: 'Dog Age'
+                      hintText: 'Cantidad comprada'
                   ),
                   validator: (String? value){
                     if( value == null || value.isEmpty){
-                      return 'Please provide Dog Age';
+                      return 'Rellena cantidad';
                     }
 
-                    age = int.parse(value);
+                    qtyBuy = int.parse(value);
                     return null;
                   },
                 ),
                 const SizedBox(height: 10,),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                      hintText: 'Cantidad vendida'
+                  ),
+                  validator: (String? value){
+                    if( value == null || value.isEmpty){
+                      return 'Rellena cantidad';
+                    }
+
+                    qtySell = int.parse(value);
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10,),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                      hintText: 'Comision'
+                  ),
+                  validator: (String? value){
+                    if( value == null || value.isEmpty){
+                      return 'Pon una comision';
+                    }
+
+                    comision = int.parse(value);
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10,),
+                TextField(
+                    controller: dateController, //editing controller of this TextField
+                    decoration: const InputDecoration(
+                        icon: Icon(Icons.calendar_today), //icon of text field
+                        labelText: "Enter Date" //label text of field
+                    ),
+                    readOnly: true,  // when true user cannot edit text
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1950),
+                          lastDate: DateTime(2101),);
+                      if(pickedDate != null ){
+
+                        String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
+                        setState(() {
+                          dateController.text = formattedDate;
+                        });
+                        //You can format date as per your need
+
+                        fecha = formattedDate;
+
+                      }else{
+                        print("Date is not selected");
+                      }
+                      //when click we have to show the datepicker
+
+                    }
+                ),
+
 
                 ElevatedButton(onPressed: () async {
 
                   if( formKey.currentState!.validate()){
-
-                    var dog = Dog(name: name, age: age);
-
                     var dbHelper =  DatabaseHelper.instance;
-                    int result = await dbHelper.insertDog(dog);
-
-                    if( result > 0 ){
-                      Fluttertoast.showToast(msg: 'Dog Saved');
-                    }
+                    // int result = await dbHelper.insertDog(dog);
+                    dbHelper.setBTC(tipo,qtyBuy,qtySell,comision,fecha);
+                    // if( result > 0 ){
+                    //   Fluttertoast.showToast(msg: 'Dog Saved');
+                    // }
                   }
 
 
                 }, child: const Text('Save')),
+                ElevatedButton(onPressed: () async {
+                  await Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                    return const ListaBTC();
+                  }));
+                  Bitcoin().id = null;
+                }, child: const Text('View All')),
                 ElevatedButton(onPressed: (){
                   Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                    return const DogsListScreen();
+                    return Graph();
                   }));
-                }, child: const Text('View All')),
+                }, child: const Text('Ver grafico')),
 
               ],
             ),
