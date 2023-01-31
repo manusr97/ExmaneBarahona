@@ -1,13 +1,12 @@
 import 'dart:ffi';
 
-class Bitcoin {
+class Model {
   int? id;
+  late String categoria;
   late String tipo;
-  late int qtyBuy;
-  late int qtySell;
-  late int comision;
+  late String concepto;
+  late int cantidad;
   late String fecha;
-  late Float valor;
 
 
   // Dog({
@@ -15,54 +14,48 @@ class Bitcoin {
   //   required this.name,
   //   required this.age,
   // });
-  static final Bitcoin _modelo = Bitcoin._internal();
-  factory Bitcoin(){
+  static final Model _modelo = Model._internal();
+  factory Model(){
     return _modelo;
   }
-  Bitcoin._internal();
+  Model._internal();
 
   // Convert a Dog into a Map. The keys must correspond to the names of the
   // columns in the database.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'categoria': categoria,
       'tipo': tipo,
-      'qtyBuy': qtyBuy,
-      'qtySell': qtySell,
-      'comision': comision,
+      'concepto': concepto,
+      'cantidad': cantidad,
       'fecha' :fecha ,
     };
   }
 
   // Convert a Map to a Dog Object
-  Bitcoin.fromMap(Map<String, dynamic> map) {
+  Model.fromMap(Map<String, dynamic> map) {
     id = map['id'];
+    categoria = map['categoria'];
     tipo = map['tipo'];
-    qtyBuy = map['qtyBuy'];
-    qtySell = map['qtySell'];
-    comision = map['comision'];
+    concepto = map['concepto'];
+    cantidad = map['cantidad'];
     fecha = map['fecha'];
   }
-  void updBTC(int _id,String _tipo,int _qtyBuy,int _qtySell,int _comision,String _fecha){
+  void updModel(int _id,String _categoria,String _tipo,String _concepto,int _cantidad,String _fecha){
     id = _id;
+    categoria = _categoria;
     tipo = _tipo;
-    qtyBuy = _qtyBuy;
-    qtySell = _qtySell;
-    comision = _comision;
+    concepto = _concepto;
+    cantidad = _cantidad;
     fecha = _fecha;
   }
-  void setBTC(String _tipo,int _qtyBuy,int _qtySell,int _comision,String _fecha){
+  void setBTC(String _categoria,String _tipo,String _concepto,int _cantidad,String _fecha){
     tipo = _tipo;
-    qtyBuy = _qtyBuy;
-    qtySell = _qtySell;
-    comision = _comision;
+    categoria = _categoria;
+    tipo = _tipo;
+    concepto = _concepto;
+    cantidad = _cantidad;
     fecha = _fecha;
   }
-  // calcularPrecio(String _fecha,int _qtyBuy,int _qtySell){
-  //
-  //   for (_fecha in _portaInfoMap.keys){
-  //
-  //   }
-  //   return _portaInfoMap;
-  // }
 }

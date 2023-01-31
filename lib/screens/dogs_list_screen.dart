@@ -3,16 +3,17 @@ import 'package:dogs_db_pseb_bridge/screens/update_dog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import '../models/dog.dart';
+import '../db/controlador.dart';
+import '../models/modelo.dart';
 
-class ListaBTC extends StatefulWidget {
-  const ListaBTC({Key? key}) : super(key: key);
+class Lista extends StatefulWidget {
+  const Lista({Key? key}) : super(key: key);
 
   @override
-  State<ListaBTC> createState() => _ListaBTCState();
+  State<Lista> createState() => _ListaState();
 }
 
-class _ListaBTCState extends State<ListaBTC> {
+class _ListaState extends State<Lista> {
 
 
   @override
@@ -21,9 +22,9 @@ class _ListaBTCState extends State<ListaBTC> {
       appBar: AppBar(
         title: const Text('Lista de Ordenes'),
       ),
-      body: FutureBuilder<List<Bitcoin>>(
-        future: DatabaseHelper.instance.getAllOrders(),
-        builder: (BuildContext context, AsyncSnapshot<List<Bitcoin>> snapshot) {
+      body: FutureBuilder<List<Model>>(
+        future: DatabaseHelper.instance.getAll(),
+        builder: (BuildContext context, AsyncSnapshot<List<Model>> snapshot) {
           if (!snapshot.hasData) {
             return const Center(
               child: CircularProgressIndicator(),
@@ -32,13 +33,13 @@ class _ListaBTCState extends State<ListaBTC> {
             if (snapshot.data!.isEmpty) {
               return const Center(child: Text('No se han encontrado ordenes'));
             } else {
-              List<Bitcoin> btc = snapshot.data!;
+              List<Model> btc = snapshot.data!;
               return Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: ListView.builder(
                     itemCount: btc.length,
                     itemBuilder: (context, index) {
-                      Bitcoin dog = btc[index];
+                      Model x = btc[index];
                       return Card(
                           margin: const EdgeInsets.only(bottom: 15),
                           child: Padding(
@@ -51,7 +52,7 @@ class _ListaBTCState extends State<ListaBTC> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          dog.tipo,
+                                          x.tipo,
                                           style: const TextStyle(
                                               fontSize: 20,
                                               fontWeight: FontWeight.bold),
@@ -59,10 +60,10 @@ class _ListaBTCState extends State<ListaBTC> {
                                         const SizedBox(
                                           height: 10,
                                         ),
-                                        Text('Cantidad comprada: ${dog.qtyBuy} BTC'),
-                                        Text('Cantidad vendida: ${dog.qtySell} BTC'),
-                                        Text('Comision: ${dog.comision} %'),
-                                        Text('Fecha: ${dog.fecha}'),
+                                        Text('Categoria: ${x.categoria}'),
+                                        Text('Cantidad: ${x.cantidad} €'),
+                                        Text('Concepto: ${x.concepto}'),
+                                        Text('Fecha: ${x.fecha}'),
 
                                       ],
                                     ),
@@ -75,7 +76,7 @@ class _ListaBTCState extends State<ListaBTC> {
                                                 await Navigator.of(context)
                                                     .push(MaterialPageRoute(
                                                         builder: (context) {
-                                              return Actualizar(dog: dog);
+                                              return Actualizar(model: x);
                                             }));
 
                                             if (result == 'done') {
@@ -114,8 +115,8 @@ class _ListaBTCState extends State<ListaBTC> {
                                                             int result =
                                                                 await DatabaseHelper
                                                                     .instance
-                                                                    .deleteDog(
-                                                                        dog.id!);
+                                                                    .delete(
+                                                                        x.id!);
 
                                                             if (result > 0) {
                                                               Fluttertoast

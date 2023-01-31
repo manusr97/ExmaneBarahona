@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dogs_db_pseb_bridge/models/dog.dart';
+import 'package:dogs_db_pseb_bridge/models/modelo.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -23,7 +23,7 @@ class DatabaseHelper {
     // to store database
 
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = '${directory.path}/btcs.db';
+    String path = '${directory.path}/basededatos1.db';
 
     // open/ create database at a given path
     var studentsDatabase = await openDatabase(
@@ -36,63 +36,63 @@ class DatabaseHelper {
   }
 
   void _createDb(Database db, int newVersion) async {
-    await db.execute('''Create TABLE btcs (
+    await db.execute('''Create TABLE movimientos (
                   id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  categoria TEXT,
                   tipo TEXT,
-                  qtyBuy INTEGER,
-                  qtySell INTEGER,
-                  comision INTEGER,
+                  concepto TEXT,
+                  cantidad INTEGER,
                   fecha TEXT
                    )
     
     ''');
   }
   // insert
-  void setBTC(tipo,qtyBuy,qtySell,comision,fecha){
-    Bitcoin().setBTC(tipo,qtyBuy,qtySell,comision,fecha);
-    insertOrder(Bitcoin());
+  void setModel(categoria,tipo,concepto,cantidad,fecha){
+    Model().setBTC(categoria,tipo,concepto,cantidad,fecha);
+    insert(Model());
   }
-  void updBTC(id,tipo,qtyBuy,qtySell,comision,fecha){
-    Bitcoin().updBTC(id, tipo,qtyBuy,qtySell,comision,fecha);
-    updateBTC(Bitcoin());
+  void updModel(id,categoria,tipo,concepto,cantidad,fecha){
+    Model().updModel(id, categoria,tipo,concepto,cantidad,fecha);
+    update(Model());
   }
-  Future<int> insertOrder(Bitcoin dog) async {
+  Future<int> insert(Model obj) async {
     // add dog to table
 
     Database db = await instance.database;
-    int result = await db.insert('btcs', dog.toMap());
+    int result = await db.insert('movimientos', obj.toMap());
     return result;
   }
 
   // read operation
-  Future<List<Bitcoin>> getAllOrders() async {
-    List<Bitcoin> dogs = [];
+  Future<List<Model>> getAll() async {
+    List<Model> orders = [];
 
     Database db = await instance.database;
 
     // read data from table
-    List<Map<String, dynamic>> listMap = await db.query('btcs');
+    List<Map<String, dynamic>> listMap = await db.query('movimientos');
 
-    for (var dogMap in listMap) {
-      Bitcoin dog = Bitcoin.fromMap(dogMap);
-      dogs.add(dog);
+    for (var x in listMap) {
+      Model obj = Model.fromMap(x);
+      orders.add(obj);
     }
 
-    return dogs;
+    return orders;
   }
 
 
   // delete
-  Future<int> deleteDog(int id) async {
+  Future<int> delete(int id) async {
     Database db = await instance.database;
-    int result = await db.delete('btcs', where: 'id=?', whereArgs: [id]);
+    int result = await db.delete('movimientos', where: 'id=?', whereArgs: [id]);
     return result;
   }
 
   // update
-  Future<int> updateBTC(Bitcoin btc) async {
+  Future<int> update(Model obj) async {
     Database db = await instance.database;
-    int result = await db.update('btcs', btc.toMap(), where: 'id=?', whereArgs: [btc.id]);
+    int result = await db.update('movimientos', obj.toMap(), where: 'id=?', whereArgs: [obj.id]);
     return result;
   }
 

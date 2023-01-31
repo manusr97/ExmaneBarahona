@@ -1,13 +1,15 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import '../db/controlador.dart';
-import '../models/dog.dart';
+import '../models/modelo.dart';
 
 class Actualizar extends StatefulWidget {
-  final Bitcoin dog;
+  final Model model;
 
-  const Actualizar({Key? key, required this.dog}) : super(key: key);
+  const Actualizar({Key? key, required this.model}) : super(key: key);
 
   @override
   State<Actualizar> createState() => _ActualizarState();
@@ -16,9 +18,9 @@ class Actualizar extends StatefulWidget {
 class _ActualizarState extends State<Actualizar> {
   late String fecha;
   late String tipo;
-  late int qtyBuy;
-  late int qtySell;
-  late int comision;
+  late int cantidad;
+  late String concepto;
+  late String categoria;
 
   var formKey = GlobalKey<FormState>();
   TextEditingController dateController = TextEditingController();
@@ -36,7 +38,7 @@ class _ActualizarState extends State<Actualizar> {
             child: Column(
               children: [
                 TextFormField(
-                  initialValue: widget.dog.tipo,
+                  initialValue: widget.model.tipo,
                   decoration: const InputDecoration(hintText: 'Dog Name'),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -51,7 +53,7 @@ class _ActualizarState extends State<Actualizar> {
                   height: 10,
                 ),
                 TextFormField(
-                  initialValue: widget.dog.qtyBuy.toString(),
+                  initialValue: widget.model.cantidad.toString(),
                   keyboardType: TextInputType.number,
                   decoration: const InputDecoration(hintText: 'Dog Age'),
                   validator: (String? value) {
@@ -59,7 +61,7 @@ class _ActualizarState extends State<Actualizar> {
                       return 'Please provide Dog Age';
                     }
 
-                    qtyBuy = int.parse(value);
+                    cantidad = int.parse(value);
                     return null;
                   },
                 ),
@@ -67,7 +69,6 @@ class _ActualizarState extends State<Actualizar> {
                   height: 10,
                 ),
                 TextFormField(
-                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                       hintText: 'Cantidad vendida'
                   ),
@@ -76,13 +77,12 @@ class _ActualizarState extends State<Actualizar> {
                       return 'Rellena cantidad';
                     }
 
-                    qtySell = int.parse(value);
+                    concepto = value;
                     return null;
                   },
                 ),
                 const SizedBox(height: 10,),
                 TextFormField(
-                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
                       hintText: 'Comision'
                   ),
@@ -91,7 +91,7 @@ class _ActualizarState extends State<Actualizar> {
                       return 'Pon una comision';
                     }
 
-                    comision = int.parse(value);
+                    categoria = value;
                     return null;
                   },
                 ),
@@ -128,9 +128,9 @@ class _ActualizarState extends State<Actualizar> {
                 ElevatedButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        var id = widget.dog.id;
+                        var id = widget.model.id;
                         var dbHelper = DatabaseHelper.instance;
-                        dbHelper.updBTC(id,tipo,qtyBuy,qtySell,comision,fecha);
+                        dbHelper.updModel(id,categoria,tipo,concepto,cantidad,fecha);
                         // Dog().id = null;
                         // int result = await dbHelper.updateDog(dog);
                         //
